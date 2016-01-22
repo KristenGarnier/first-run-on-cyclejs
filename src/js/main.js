@@ -15,14 +15,14 @@ const chooseMessage = function chooseMessage (message) {
 function main (drivers) {
   return {
     DOM: drivers.DOM.select('input').events('keyup')
-        .map(ev => ev.target.value)
-        .startWith('')
-        .map(message =>
-            div([
-              input({type: 'text', placeholder: 'Tapez moi'}),
-              p(chooseMessage(message))
-            ])
-        )
+    .map(ev => ev.target.value)
+    .startWith('')
+    .map(message =>
+      div([
+        input({type: 'text', placeholder: 'Tapez moi'}),
+        p(chooseMessage(message))
+      ])
+    )
   }
 }
 
