@@ -1,27 +1,34 @@
 import Rx from 'rx'
 import Cycle from '@Cycle/core'
 
+const h1 = (children) => {
+  return {
+    tagName: 'H1',
+    children
+  }
+}
+
+const span = (children) => {
+  return {
+    tagName: 'SPAN',
+    children
+  }
+}
+
 // Logic (functional)
 function main (DOMSource) {
-  const click$ = DOMSource.DOM
+  const click$ = DOMSource.DOM.selectEvents('span', 'mouseover')
   const sinks = {
     DOM: click$
       .startWith(null)
       .flatMapLatest(() =>
         Rx.Observable.timer(0, 1000)
-         .map(i => {
-           return {
-             tagName: 'H1',
-             children: [
-               {
-                 tagName: 'SPAN',
-                 children: [
-                   `Seconds enlapsed ${i}`
-                 ]
-               }
-             ]
-           }
-         })
+         .map(i => h1([
+           span([
+             `Seconds enlapsed ${i}`
+           ])
+         ])
+         )
       ),
     Log: Rx.Observable.timer(0, 2000).map(i => 2 * i)
   }
@@ -52,7 +59,12 @@ function DOMDriver (obj$) {
     const element = createElement(obj)
     container.appendChild(element)
   })
-  const DOMSource = Rx.Observable.fromEvent(document, 'click')
+  const DOMSource = {
+    selectEvents (tagName, eventType) {
+      return Rx.Observable.fromEvent(document, eventType)
+        .filter(ev => ev.target.tagName === tagName.toUpperCase())
+    }
+  }
   return DOMSource
 }
 
